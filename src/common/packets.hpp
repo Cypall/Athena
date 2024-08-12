@@ -221,10 +221,10 @@ DEFINE_PACKET_HEADER( TC_RESULT, 0xae3 );
 
 template <typename sessiontype> class PacketDatabase{
 private:
-	struct s_packet_info{
+	struct s_packet_info {
 		bool fixed;
 		int16 size;
-		std::function<bool ( int fd, sessiontype& sd )> func;
+		std::function<bool(int fd, sessiontype& sd)> func;
 	};
 
 	std::unordered_map<int16, s_packet_info> infos;
