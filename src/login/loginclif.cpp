@@ -142,7 +142,7 @@ static void logclif_auth_ok(struct login_session_data* sd) {
 		2 : show server info + server name + user online (number only)
 		3 : show server info + server name + user online (number + metric SI prefix)
 		*/
-		char choose = 2;
+		char choose = 3;
 		const int buffer_size = sizeof(char_server.name);
 		char buffer[buffer_size];
 		if( choose == 1 ) {
@@ -155,7 +155,11 @@ static void logclif_auth_ok(struct login_session_data* sd) {
 		}
 		else if( choose == 3 ) {
 			int num_user_online = ch_server[i].users;
-			if( num_user_online >= 1000 ) {
+			if (num_user_online < 1000) {
+				snprintf(buffer, buffer_size, "%s (%d)", ch_server[i].name, num_user_online);
+				safestrncpy( char_server.name, buffer, sizeof( char_server.name ) );
+			}
+			else if( num_user_online >= 1000 ) {
 				num_user_online = num_user_online / 1000;
 				snprintf(buffer, buffer_size, "%s (%dk)", ch_server[i].name, num_user_online);
 				safestrncpy( char_server.name, buffer, sizeof( char_server.name ) );
