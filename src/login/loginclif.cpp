@@ -136,7 +136,31 @@ static void logclif_auth_ok(struct login_session_data* sd) {
 
 		char_server.ip = htonl( ( subnet_char_ip ) ? subnet_char_ip : ch_server[i].ip );
 		char_server.port = ntows( htons( ch_server[i].port ) ); // [!] LE byte order here [!]
-		safestrncpy( char_server.name, ch_server[i].name, sizeof( char_server.name ) );
+		/* Show player online by Chayo
+		Choose
+		1 : show server info + server name
+		2 : show server info + server name + user online (number only)
+		3 : show server info + server name + user online (number + metric SI prefix)
+		*/
+		char choose = 2;
+		const int buffer_size = sizeof(char_server.name);
+		char buffer[buffer_size];
+		if( choose == 1 ) {
+			safestrncpy( char_server.name, ch_server[i].name, sizeof( char_server.name ) );
+		}
+		else if( choose == 2 ) {
+			int num_user_online = ch_server[i].users;
+			snprintf(buffer, buffer_size, "%s (%d)", ch_server[i].name, num_user_online);
+			safestrncpy( char_server.name, buffer, sizeof( char_server.name ) );
+		}
+		else if( choose == 3 ) {
+			int num_user_online = ch_server[i].users;
+			if( num_user_online >= 1000 ) {
+				num_user_online = num_user_online / 1000;
+				snprintf(buffer, buffer_size, "%s (%dk)", ch_server[i].name, num_user_online);
+				safestrncpy( char_server.name, buffer, sizeof( char_server.name ) );
+			}
+		}
 		char_server.users = login_get_usercount( ch_server[i].users );
 		char_server.type = ch_server[i].type;
 		char_server.new_ = ch_server[i].new_;
