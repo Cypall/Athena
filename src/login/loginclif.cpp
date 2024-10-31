@@ -136,9 +136,11 @@ static void logclif_auth_ok(struct login_session_data* sd) {
 
 		char_server.ip = htonl( ( subnet_char_ip ) ? subnet_char_ip : ch_server[i].ip );
 		char_server.port = ntows( htons( ch_server[i].port ) ); // [!] LE byte order here [!]
+		const int buffer_size = sizeof(char_server.name); // Show user online [Chayo-Cypall]
 		const int buffer_size = sizeof(char_server.name);
 		char buffer[buffer_size];
 		int num_user_online = ch_server[i].users;
+		float num_user_online_f;
 		if (num_user_online <= 0) {
 			safestrncpy( char_server.name, ch_server[i].name, sizeof( char_server.name ) );
 		}
@@ -147,8 +149,8 @@ static void logclif_auth_ok(struct login_session_data* sd) {
 			safestrncpy( char_server.name, buffer, sizeof( char_server.name ) );
 		}
 		else if( num_user_online >= 1000 ) {
-			num_user_online = num_user_online / 1000;
-			snprintf(buffer, buffer_size, "%s (%dk)", ch_server[i].name, num_user_online);
+			num_user_online_f = static_cast<float>(num_user_online) / 1000;
+			snprintf(buffer, buffer_size, "%s (%.1fk)", ch_server[i].name, num_user_online_f);
 			safestrncpy( char_server.name, buffer, sizeof( char_server.name ) );
 		}
 		char_server.users = login_get_usercount( ch_server[i].users );
